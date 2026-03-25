@@ -8,21 +8,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f0e8;
-  --surface: #fdfaf4;
-  --card: #ffffff;
-  --ink: #1a1208;
-  --ink2: #4a3f2f;
-  --muted: #9c8e7a;
-  --border: #e0d8c8;
-  --accent: #2d6a4f;
-  --accent2: #e76f51;
-  --gold: #d4a017;
-  --blue: #1d6fa4;
-  --correct: #2d6a4f;
-  --wrong: #c1121f;
-  --correct-bg: #d8f3dc;
-  --wrong-bg: #ffe0e0;
+  --bg: #0f1117;
+  --surface: #181c27;
+  --card: #1e2333;
+  --ink: #f0f2ff;
+  --ink2: #b0bcd4;
+  --muted: #6b7a9a;
+  --border: #2a3050;
+  --accent: #3ecf8e;
+  --accent2: #ff6b35;
+  --gold: #f5c542;
+  --blue: #60a5fa;
+  --correct: #3ecf8e;
+  --wrong: #f87171;
+  --correct-bg: #0d2e20;
+  --wrong-bg: #2e1010;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -30,14 +30,6 @@ body {
   color: var(--ink);
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-}
-
-/* NOISE TEXTURE */
-body::before {
-content: ‘’;
-position: fixed; inset: 0;
-background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23noise)’ opacity=‘0.03’/%3E%3C/svg%3E”);
-pointer-events: none; z-index: 0;
 }
 
 /* HEADER */
@@ -168,7 +160,7 @@ text-transform: uppercase; padding: 3px 9px; border-radius: 20px;
 .qtext { flex: 1; font-size: 0.93rem; line-height: 1.55; color: var(–ink); }
 
 .eg {
-background: #f8f5ee;
+background: #1a1e2e;
 border-left: 3px solid var(–gold);
 border-radius: 0 8px 8px 0;
 padding: 10px 14px;
@@ -188,11 +180,12 @@ border-radius: 10px;
 padding: 11px 14px;
 cursor: pointer;
 font-size: 0.88rem;
+color: var(–ink);
 transition: all 0.18s;
 user-select: none;
 }
-.opt:hover:not(.disabled) { border-color: var(–accent); background: #f0f7f4; }
-.opt.selected { border-color: var(–blue); background: #eff6ff; }
+.opt:hover:not(.disabled) { border-color: var(–accent); background: #162b22; }
+.opt.selected { border-color: var(–blue); background: #1a2a40; }
 .opt.correct { border-color: var(–correct); background: var(–correct-bg); color: var(–correct); font-weight: 600; }
 .opt.wrong { border-color: var(–wrong); background: var(–wrong-bg); color: var(–wrong); }
 .opt.disabled { cursor: default; }
@@ -201,7 +194,7 @@ width: 26px; height: 26px; flex-shrink: 0;
 border-radius: 7px; border: 1.5px solid var(–border);
 display: flex; align-items: center; justify-content: center;
 font-family: ‘DM Mono’, monospace; font-size: 0.75rem; font-weight: 500;
-background: #fff; transition: all 0.18s;
+background: var(–surface); color: var(–ink2); transition: all 0.18s;
 }
 .opt.correct .oletter { background: var(–correct); color: #fff; border-color: var(–correct); }
 .opt.wrong .oletter { background: var(–wrong); color: #fff; border-color: var(–wrong); }
@@ -222,9 +215,9 @@ outline: none;
 transition: border-color 0.2s;
 }
 .fill-in:focus { border-color: var(–accent); }
-.fill-in.correct { border-color: var(–correct); background: var(–correct-bg); }
-.fill-in.wrong { border-color: var(–wrong); background: var(–wrong-bg); }
-.fill-in:disabled { opacity: 0.75; }
+.fill-in.correct { border-color: var(–correct); background: var(–correct-bg); color: var(–correct); }
+.fill-in.wrong { border-color: var(–wrong); background: var(–wrong-bg); color: var(–wrong); }
+.fill-in:disabled { opacity: 0.85; }
 .hint-txt { font-size: 0.75rem; color: var(–muted); font-style: italic; }
 .check-btn {
 background: var(–accent);
@@ -245,8 +238,8 @@ border-radius: 10px; font-size: 0.84rem; line-height: 1.55;
 display: none;
 }
 .fb.show { display: block; }
-.fb.fb-ok { background: var(–correct-bg); border: 1px solid #b7e4c7; color: #1b4332; }
-.fb.fb-fail { background: var(–wrong-bg); border: 1px solid #fca5a5; color: #7f1d1d; }
+.fb.fb-ok { background: var(–correct-bg); border: 1px solid #1a5c3a; color: #7ee8b0; }
+.fb.fb-fail { background: var(–wrong-bg); border: 1px solid #5c1a1a; color: #fca5a5; }
 .fb strong { font-family: ‘DM Mono’, monospace; }
 
 /* RESET */
