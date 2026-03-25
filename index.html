@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --surface: #fdfaf4;
+  --card: #ffffff;
+  --ink: #1a1208;
+  --ink2: #4a3f2f;
+  --muted: #9c8e7a;
+  --border: #e0d8c8;
+  --accent: #2d6a4f;
+  --accent2: #e76f51;
+  --gold: #d4a017;
+  --blue: #1d6fa4;
+  --correct: #2d6a4f;
+  --wrong: #c1121f;
+  --correct-bg: #d8f3dc;
+  --wrong-bg: #ffe0e0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+/* NOISE TEXTURE */
+body::before {
+content: ‘’;
+position: fixed; inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23noise)’ opacity=‘0.03’/%3E%3C/svg%3E”);
+pointer-events: none; z-index: 0;
+}
+
+/* HEADER */
+.header {
+background: var(–ink);
+color: #fff;
+padding: 28px 32px;
+display: flex; align-items: center; gap: 20px;
+position: relative; overflow: hidden;
+}
+.header::after {
+content: ‘🇬🇧’;
+position: absolute; right: 32px; top: 50%;
+transform: translateY(-50%);
+font-size: 3.5rem; opacity: 0.12;
+}
+.header-icon {
+width: 54px; height: 54px;
+background: var(–accent2);
+border-radius: 14px;
+display: flex; align-items: center; justify-content: center;
+font-size: 1.6rem; flex-shrink: 0;
+}
+.header h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.8rem; font-weight: 900;
+letter-spacing: -0.02em;
+}
+.header h1 em { color: var(–accent2); font-style: normal; }
+.header p { color: rgba(255,255,255,0.55); font-size: 0.85rem; margin-top: 3px; }
+.score-wrap {
+margin-left: auto;
+text-align: right;
+padding-right: 60px;
+}
+.score-big { font-family: ‘DM Mono’, monospace; font-size: 2rem; font-weight: 500; color: var(–accent2); line-height: 1; }
+.score-label { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+/* TABS */
+.tabs-outer {
+background: var(–ink);
+border-bottom: 3px solid var(–accent2);
+overflow-x: auto; scrollbar-width: none;
+}
+.tabs-outer::-webkit-scrollbar { display: none; }
+.tabs {
+display: flex; padding: 0 20px;
+min-width: max-content;
+}
+.tab {
+padding: 12px 18px;
+cursor: pointer;
+font-size: 0.78rem; font-weight: 600;
+color: rgba(255,255,255,0.45);
+white-space: nowrap;
+border-bottom: 3px solid transparent;
+margin-bottom: -3px;
+transition: all 0.2s;
+letter-spacing: 0.02em;
+text-transform: uppercase;
+}
+.tab:hover { color: rgba(255,255,255,0.8); }
+.tab.active { color: var(–accent2); border-bottom-color: var(–accent2); }
+.tab .tab-check { display: inline-block; margin-left: 5px; }
+
+/* MAIN */
+.main { max-width: 820px; margin: 0 auto; padding: 32px 16px 80px; position: relative; z-index: 1; }
+
+.mod-banner {
+background: var(–ink);
+color: #fff;
+border-radius: 16px;
+padding: 24px 28px;
+margin-bottom: 28px;
+display: flex; align-items: center; gap: 18px;
+position: relative; overflow: hidden;
+}
+.mod-banner::before {
+content: ‘’;
+position: absolute; right: -20px; top: -20px;
+width: 120px; height: 120px;
+background: var(–accent2);
+border-radius: 50%; opacity: 0.1;
+}
+.mod-num {
+font-family: ‘Playfair Display’, serif;
+font-size: 3rem; font-weight: 900;
+color: var(–accent2); line-height: 1;
+flex-shrink: 0;
+}
+.mod-info h2 { font-family: ‘Playfair Display’, serif; font-size: 1.25rem; }
+.mod-info p { color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-top: 4px; }
+.mod-progress { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+.pbar { flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+.pbar-fill { height: 100%; background: var(–accent2); border-radius: 3px; transition: width 0.4s ease; }
+.pbar-txt { font-family: ‘DM Mono’, monospace; font-size: 0.72rem; color: rgba(255,255,255,0.4); }
+
+/* QUESTION */
+.qcard {
+background: var(–card);
+border: 1.5px solid var(–border);
+border-radius: 16px;
+padding: 22px;
+margin-bottom: 16px;
+transition: border-color 0.3s, box-shadow 0.3s;
+box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.qcard.ok { border-color: var(–correct); box-shadow: 0 2px 16px rgba(45,106,79,0.12); }
+.qcard.fail { border-color: var(–wrong); box-shadow: 0 2px 16px rgba(193,18,31,0.12); }
+
+.qhead { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.qnum {
+width: 30px; height: 30px; flex-shrink: 0;
+background: var(–ink); color: #fff;
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DM Mono’, monospace; font-size: 0.8rem; font-weight: 500;
+}
+.qcard.ok .qnum { background: var(–correct); }
+.qcard.fail .qnum { background: var(–wrong); }
+.qbadge {
+margin-left: auto; flex-shrink: 0;
+font-size: 0.62rem; font-weight: 600; letter-spacing: 0.07em;
+text-transform: uppercase; padding: 3px 9px; border-radius: 20px;
+}
+.badge-mc { background: #dbeafe; color: var(–blue); }
+.badge-fill { background: #fef3c7; color: #92400e; }
+.qtext { flex: 1; font-size: 0.93rem; line-height: 1.55; color: var(–ink); }
+
+.eg {
+background: #f8f5ee;
+border-left: 3px solid var(–gold);
+border-radius: 0 8px 8px 0;
+padding: 10px 14px;
+margin: 10px 0;
+font-size: 0.87rem;
+color: var(–ink2);
+font-style: italic;
+}
+
+/* OPTIONS */
+.options { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+display: flex; align-items: center; gap: 10px;
+background: var(–surface);
+border: 1.5px solid var(–border);
+border-radius: 10px;
+padding: 11px 14px;
+cursor: pointer;
+font-size: 0.88rem;
+transition: all 0.18s;
+user-select: none;
+}
+.opt:hover:not(.disabled) { border-color: var(–accent); background: #f0f7f4; }
+.opt.selected { border-color: var(–blue); background: #eff6ff; }
+.opt.correct { border-color: var(–correct); background: var(–correct-bg); color: var(–correct); font-weight: 600; }
+.opt.wrong { border-color: var(–wrong); background: var(–wrong-bg); color: var(–wrong); }
+.opt.disabled { cursor: default; }
+.oletter {
+width: 26px; height: 26px; flex-shrink: 0;
+border-radius: 7px; border: 1.5px solid var(–border);
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DM Mono’, monospace; font-size: 0.75rem; font-weight: 500;
+background: #fff; transition: all 0.18s;
+}
+.opt.correct .oletter { background: var(–correct); color: #fff; border-color: var(–correct); }
+.opt.wrong .oletter { background: var(–wrong); color: #fff; border-color: var(–wrong); }
+.opt.selected .oletter { background: var(–blue); color: #fff; border-color: var(–blue); }
+
+/* FILL */
+.fill-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.fill-in {
+background: var(–surface);
+border: 1.5px solid var(–border);
+border-radius: 9px;
+padding: 9px 14px;
+color: var(–ink);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.88rem;
+min-width: 180px;
+outline: none;
+transition: border-color 0.2s;
+}
+.fill-in:focus { border-color: var(–accent); }
+.fill-in.correct { border-color: var(–correct); background: var(–correct-bg); }
+.fill-in.wrong { border-color: var(–wrong); background: var(–wrong-bg); }
+.fill-in:disabled { opacity: 0.75; }
+.hint-txt { font-size: 0.75rem; color: var(–muted); font-style: italic; }
+.check-btn {
+background: var(–accent);
+color: #fff;
+border: none; border-radius: 9px;
+padding: 9px 20px;
+font-family: ‘DM Sans’, sans-serif;
+font-weight: 600; font-size: 0.85rem;
+cursor: pointer; transition: background 0.2s;
+}
+.check-btn:hover { background: #1f4f3a; }
+.check-btn:disabled { background: var(–border); color: var(–muted); cursor: default; }
+
+/* FEEDBACK */
+.fb {
+margin-top: 12px; padding: 12px 15px;
+border-radius: 10px; font-size: 0.84rem; line-height: 1.55;
+display: none;
+}
+.fb.show { display: block; }
+.fb.fb-ok { background: var(–correct-bg); border: 1px solid #b7e4c7; color: #1b4332; }
+.fb.fb-fail { background: var(–wrong-bg); border: 1px solid #fca5a5; color: #7f1d1d; }
+.fb strong { font-family: ‘DM Mono’, monospace; }
+
+/* RESET */
+.reset-btn {
+margin-top: 24px;
+background: transparent;
+border: 1.5px solid var(–border);
+color: var(–muted);
+border-radius: 9px;
+padding: 9px 20px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.82rem; font-weight: 600;
+cursor: pointer; transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(–accent2); color: var(–accent2); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+@keyframes popIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.qcard { animation: popIn 0.3s ease both; }
+.qcard:nth-child(2) { animation-delay: 0.04s; }
+.qcard:nth-child(3) { animation-delay: 0.08s; }
+.qcard:nth-child(4) { animation-delay: 0.12s; }
+.qcard:nth-child(5) { animation-delay: 0.16s; }
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">📖</div>
+  <div>
+    <h1>English <em>Practice</em></h1>
+    <p>Selección múltiple y completar • 10 ejercicios por módulo</p>
+  </div>
+  <div class="score-wrap">
+    <div class="score-big" id="gscore">0</div>
+    <div class="score-label">puntos totales</div>
+  </div>
+</div>
+
+<div class="tabs-outer"><div class="tabs" id="tabs"></div></div>
+<div id="panels"></div>
+
+<script>
+// ─── MODULES DATA ─────────────────────────────────────────────────────────────
+const MODULES = [
+
+// ══════════════════════════════════════════════════════
+// M1 – VERB TO BE
+// ══════════════════════════════════════════════════════
+{
+  num:"01", title:"Verb To Be", desc:"Am / Is / Are – Affirmative, Negative, Questions",
+  qs:[
+    { type:"mc", q:"Choose the correct form of 'To Be' for the subject <em>I</em>.",
+      opts:["is","are","am","be"], ans:2,
+      exp:"Con el pronombre <strong>I</strong> siempre usamos <strong>am</strong>. Ejemplo: <em>I am a student.</em>" },
+    { type:"mc", q:"Which sentence is correct?",
+      opts:["She are happy.","She am happy.","She is happy.","She be happy."], ans:2,
+      exp:"Los pronombres <strong>he, she, it</strong> usan <strong>is</strong>. → <em>She is happy.</em>" },
+    { type:"fill", q:"Complete with the correct form of To Be:", eg:"They ___ my friends.",
+      ans:"are", hint:"Plural pronoun", exp:"Con <strong>they / we / you</strong> (plural) usamos <strong>are</strong>." },
+    { type:"mc", q:"How do you make 'He is tired' negative?",
+      opts:["He not is tired.","He is not tired.","He are not tired.","He isn't tired never."], ans:1,
+      exp:"La negación se forma con <strong>is not</strong> o la contracción <strong>isn't</strong>. → <em>He is not tired.</em>" },
+    { type:"fill", q:"Complete the question:", eg:"___ you from Costa Rica?",
+      ans:"Are", hint:"To Be + You", exp:"Las preguntas se forman invirtiendo sujeto y verbo: <strong>Are + you</strong>." },
+    { type:"mc", q:"What is the contraction of 'I am'?",
+      opts:["I'm","Im","I'am","I'me"], ans:0,
+      exp:"La contracción correcta es <strong>I'm</strong> (apóstrofo entre I y m)." },
+    { type:"mc", q:"'We ___ students.' Choose the correct verb.",
+      opts:["is","am","are","be"], ans:2,
+      exp:"<strong>We</strong> es plural y usa <strong>are</strong>." },
+    { type:"fill", q:"Complete:", eg:"It ___ a beautiful day.",
+      ans:"is", hint:"Singular / neutro", exp:"<strong>It</strong> es singular neutro y usa <strong>is</strong>." },
+    { type:"mc", q:"Which is a correct yes/no question with To Be?",
+      opts:["Is she doctor?","She is a doctor?","Is she a doctor?","Does she is a doctor?"], ans:2,
+      exp:"Las preguntas con To Be se forman: <strong>Is/Are/Am + sujeto + complemento?</strong>" },
+    { type:"fill", q:"Complete the negative contraction:", eg:"They ___ late.",
+      ans:"aren't", hint:"They + are + not (contracción)", exp:"<strong>aren't</strong> = are not. Se usa con they/we/you." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M2 – PRONOUNS (Subject Pronouns)
+// ══════════════════════════════════════════════════════
+{
+  num:"02", title:"Subject Pronouns", desc:"I, You, He, She, It, We, They",
+  qs:[
+    { type:"mc", q:"Replace the subject: <em>Maria is a teacher.</em>",
+      opts:["He","They","She","It"], ans:2,
+      exp:"<strong>Maria</strong> es femenino singular → se reemplaza con <strong>She</strong>." },
+    { type:"fill", q:"Complete with the correct pronoun:", eg:"___ is my dog. (Referring to a pet)",
+      ans:"It", hint:"Animals/things = ?", exp:"Para animales y cosas usamos <strong>It</strong>." },
+    { type:"mc", q:"Which pronoun replaces 'Carlos and I'?",
+      opts:["They","We","He","You"], ans:1,
+      exp:"Cuando hablamos de nosotros mismos y otra persona usamos <strong>We</strong>." },
+    { type:"mc", q:"'___ are from the USA.' (John and Mary)",
+      opts:["He","She","It","They"], ans:3,
+      exp:"Dos o más personas → <strong>They</strong>." },
+    { type:"fill", q:"Replace the noun:", eg:"The book is on the table. ___ is on the table.",
+      ans:"It", hint:"Object/thing", exp:"Los objetos se reemplazan con <strong>It</strong>." },
+    { type:"mc", q:"Which sentence uses the wrong pronoun?",
+      opts:["He is tall.","She are smart.","It is cold.","We are ready."], ans:1,
+      exp:"<em>She are smart</em> es incorrecto. Lo correcto es <strong>She IS smart</strong>." },
+    { type:"mc", q:"'___ am studying English.' Which pronoun fits?",
+      opts:["You","He","I","They"], ans:2,
+      exp:"Solo <strong>I</strong> puede ir con <strong>am</strong>." },
+    { type:"fill", q:"Complete:", eg:"Peter is my brother. ___ is very funny.",
+      ans:"He", hint:"Masculine singular", exp:"<strong>Peter</strong> es masculino singular → <strong>He</strong>." },
+    { type:"mc", q:"What does the pronoun 'You' refer to?",
+      opts:["Only one person","Only groups","One person or many people","Only the speaker"], ans:2,
+      exp:"<strong>You</strong> en inglés funciona tanto para singular como plural (tú / ustedes)." },
+    { type:"fill", q:"Complete:", eg:"___ are doctors. (Ana and Luis)",
+      ans:"They", hint:"Two people = plural", exp:"Dos personas → <strong>They</strong>." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M3 – POSSESSIVE PRONOUNS
+// ══════════════════════════════════════════════════════
+{
+  num:"03", title:"Possessive Pronouns", desc:"My, Your, His, Her, Its, Our, Their / Mine, Yours…",
+  qs:[
+    { type:"mc", q:"'This is ___ book.' (The book belongs to me.)",
+      opts:["my","mine","me","I"], ans:0,
+      exp:"<strong>My</strong> es adjetivo posesivo y va antes del sustantivo: <em>my book</em>." },
+    { type:"fill", q:"Complete with a possessive adjective:", eg:"She loves ___ cat. (Her cat)",
+      ans:"her", hint:"Female possessive", exp:"Para She usamos <strong>her</strong> como adjetivo posesivo." },
+    { type:"mc", q:"'The car is mine.' 'Mine' is a…",
+      opts:["possessive adjective","subject pronoun","possessive pronoun","object pronoun"], ans:2,
+      exp:"<strong>Mine</strong> es pronombre posesivo (reemplaza al sustantivo). No necesita un noun después." },
+    { type:"mc", q:"'Is this your phone?' 'No, it's ___.' (Belongs to her.)",
+      opts:["her","hers","she","his"], ans:1,
+      exp:"<strong>Hers</strong> es el pronombre posesivo de she/her. No va seguido de un sustantivo." },
+    { type:"fill", q:"Complete:", eg:"We love ___ country.",
+      ans:"our", hint:"We → ?", exp:"<strong>Our</strong> es el adjetivo posesivo de <em>we</em>." },
+    { type:"mc", q:"Which is the possessive adjective for 'it'?",
+      opts:["its","it's","its'","their"], ans:0,
+      exp:"<strong>its</strong> (sin apóstrofo) = posesivo de it. <em>it's</em> (con apóstrofo) = it is." },
+    { type:"mc", q:"'The children lost ___ bags.'",
+      opts:["his","her","their","our"], ans:2,
+      exp:"<strong>They</strong> (children) → adjetivo posesivo = <strong>their</strong>." },
+    { type:"fill", q:"Replace with a possessive pronoun:", eg:"These are your books. They are ___.",
+      ans:"yours", hint:"Your → ?", exp:"<strong>Yours</strong> es el pronombre posesivo de <em>you</em>." },
+    { type:"mc", q:"'He forgot ___ keys at home.'",
+      opts:["her","their","its","his"], ans:3,
+      exp:"<strong>He</strong> → adjetivo posesivo = <strong>his</strong>." },
+    { type:"fill", q:"Complete:", eg:"I lost ___ wallet.",
+      ans:"my", hint:"I → possessive adjective", exp:"<strong>My</strong> es el adjetivo posesivo de <em>I</em>." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M4 – PRESENT SIMPLE
+// ══════════════════════════════════════════════════════
+{
+  num:"04", title:"Present Simple", desc:"Habits, routines, facts – Affirmative, Negative, Questions",
+  qs:[
+    { type:"mc", q:"'She ___ coffee every morning.' (drink)",
+      opts:["drink","drinks","is drinking","drinkes"], ans:1,
+      exp:"Con he/she/it se añade <strong>-s</strong> al verbo: <em>drink → drinks</em>." },
+    { type:"fill", q:"Complete in negative:", eg:"He ___ play tennis. (does not)",
+      ans:"doesn't", hint:"He/She/It + negative", exp:"La negación con he/she/it es <strong>doesn't</strong> + infinitivo." },
+    { type:"mc", q:"Which question is correct in Present Simple?",
+      opts:["Does she likes pizza?","Do she like pizza?","Does she like pizza?","Is she like pizza?"], ans:2,
+      exp:"Con he/she/it usamos <strong>Does + subject + base verb?</strong> (sin -s en el verbo)." },
+    { type:"mc", q:"'They ___ English at school.'",
+      opts:["studies","studys","study","is study"], ans:2,
+      exp:"Con <strong>they/we/I/you</strong> el verbo va en su forma base (sin -s): <em>study</em>." },
+    { type:"fill", q:"Add the correct ending:", eg:"She teach___ math.",
+      ans:"es", hint:"teach + ? (verbs ending in -ch)", exp:"Los verbos terminados en <strong>-ch, -sh, -x, -o, -s</strong> añaden <strong>-es</strong>: teaches." },
+    { type:"mc", q:"'___ you speak French?' (Present Simple question)",
+      opts:["Are","Does","Do","Is"], ans:2,
+      exp:"Con I/you/we/they usamos <strong>Do</strong> para formar preguntas en Present Simple." },
+    { type:"fill", q:"Complete:", eg:"The sun ___ in the east.",
+      ans:"rises", hint:"Scientific fact – he/she/it form", exp:"Hechos permanentes usan Present Simple. <em>rise → rises</em> (tercera persona)." },
+    { type:"mc", q:"Which sentence is in Present Simple?",
+      opts:["I am eating now.","She was there.","He works every day.","They will come."], ans:2,
+      exp:"<em>He works every day</em> es Present Simple porque describe una rutina habitual." },
+    { type:"mc", q:"'I ___ not like spicy food.'",
+      opts:["does","do","am","did"], ans:1,
+      exp:"Con <strong>I</strong> la negación es <strong>do not (don't)</strong>." },
+    { type:"fill", q:"Complete:", eg:"___ he play video games?",
+      ans:"Does", hint:"He/She/It question", exp:"Las preguntas con he/she/it en Present Simple usan <strong>Does</strong>." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M5 – VERB TENSES (Overview)
+// ══════════════════════════════════════════════════════
+{
+  num:"05", title:"Verb Tenses", desc:"Identifying and using the main tenses",
+  qs:[
+    { type:"mc", q:"'I was eating dinner when you called.' What tense is 'was eating'?",
+      opts:["Past Simple","Present Continuous","Past Continuous","Present Perfect"], ans:2,
+      exp:"<strong>Past Continuous</strong> = was/were + verb-ing. Describe una acción en progreso en el pasado." },
+    { type:"fill", q:"Identify the tense: 'She has lived here for 10 years.' →",
+      ans:"Present Perfect", hint:"has/have + past participle", exp:"<strong>Present Perfect</strong> conecta el pasado con el presente: has/have + past participle." },
+    { type:"mc", q:"Which sentence is in the Present Continuous?",
+      opts:["She sings every day.","She sang yesterday.","She is singing now.","She has sung."], ans:2,
+      exp:"<strong>Present Continuous</strong> = am/is/are + verb-ing. Acción en progreso ahora." },
+    { type:"mc", q:"'They will travel to Europe next year.' What tense is this?",
+      opts:["Past Simple","Present Simple","Future with Will","Going to Future"], ans:2,
+      exp:"<strong>Will + infinitive</strong> = future simple (decisiones espontáneas / predicciones)." },
+    { type:"fill", q:"Complete with the correct tense (Past Simple):", eg:"Yesterday, I ___ (go) to the market.",
+      ans:"went", hint:"Irregular past of 'go'", exp:"<em>Go</em> es irregular: go → <strong>went</strong> en Past Simple." },
+    { type:"mc", q:"'He had finished the report before the meeting.' What tense?",
+      opts:["Past Simple","Past Perfect","Present Perfect","Future Perfect"], ans:1,
+      exp:"<strong>Past Perfect</strong> = had + past participle. Acción completada antes de otra en el pasado." },
+    { type:"mc", q:"Which signal word is typical of Present Simple?",
+      opts:["right now","yesterday","always","last week"], ans:2,
+      exp:"<strong>Always, usually, every day, often</strong> son señales del Present Simple (hábitos)." },
+    { type:"fill", q:"Complete with Present Continuous:", eg:"Look! The birds ___ (fly) south.",
+      ans:"are flying", hint:"are + verb-ing", exp:"Present Continuous para acciones que ocurren en este momento: <strong>are flying</strong>." },
+    { type:"mc", q:"Signal words for Past Simple include:",
+      opts:["tomorrow / next week","always / usually","yesterday / last year / ago","since / for"], ans:2,
+      exp:"<strong>Yesterday, last year, ago</strong> indican tiempo pasado específico → Past Simple." },
+    { type:"mc", q:"'Since' and 'for' are typically used with:",
+      opts:["Past Simple","Future Simple","Present Continuous","Present Perfect"], ans:3,
+      exp:"<strong>Present Perfect</strong> usa <em>since</em> (punto de inicio) y <em>for</em> (duración)." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M6 – PAST SIMPLE
+// ══════════════════════════════════════════════════════
+{
+  num:"06", title:"Past Simple", desc:"Regular & Irregular Verbs – Affirmative, Negative, Questions",
+  qs:[
+    { type:"mc", q:"'She ___ (work) late last night.'",
+      opts:["work","works","worked","was work"], ans:2,
+      exp:"Verbos regulares en Past Simple añaden <strong>-ed</strong>: work → <em>worked</em>." },
+    { type:"fill", q:"Write the past simple of 'see':", eg:"I ___ a great movie yesterday.",
+      ans:"saw", hint:"Irregular verb", exp:"<em>See</em> es irregular: see → <strong>saw</strong>." },
+    { type:"mc", q:"How do you make a negative in Past Simple?",
+      opts:["She not went.","She didn't went.","She didn't go.","She doesn't went."], ans:2,
+      exp:"Negación: <strong>did not (didn't) + base verb</strong>. El verbo vuelve a su forma base." },
+    { type:"mc", q:"'___ you see the game?' (Past Simple question)",
+      opts:["Do","Does","Did","Was"], ans:2,
+      exp:"Las preguntas en Past Simple usan <strong>Did + subject + base verb?</strong>" },
+    { type:"fill", q:"Complete:", eg:"They ___ (not/come) to the party.",
+      ans:"didn't come", hint:"did not + base verb", exp:"Negación Past Simple: <strong>didn't come</strong>." },
+    { type:"mc", q:"Which is an irregular past simple form?",
+      opts:["played","worked","bought","watched"], ans:2,
+      exp:"<strong>Bought</strong> es el pasado irregular de <em>buy</em>." },
+    { type:"fill", q:"Write the past of 'have':", eg:"She ___ a great time.",
+      ans:"had", hint:"Irregular", exp:"<em>Have → had</em> (irregular)." },
+    { type:"mc", q:"'We ___ (visit) Paris two years ago.'",
+      opts:["visit","visits","visited","were visit"], ans:2,
+      exp:"Regular verb + <strong>-ed</strong> en Past Simple: <em>visited</em>." },
+    { type:"mc", q:"'Did he ___ (eat) breakfast?' – Base form or conjugated?",
+      opts:["ate","eats","eat","eating"], ans:2,
+      exp:"Después de <strong>Did</strong>, el verbo va en su <strong>forma base</strong>: <em>eat</em>." },
+    { type:"fill", q:"Complete:", eg:"I ___ (write) a letter to my friend.",
+      ans:"wrote", hint:"write is irregular", exp:"<em>Write → wrote</em> (irregular Past Simple)." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M7 – PAST PARTICIPLE
+// ══════════════════════════════════════════════════════
+{
+  num:"07", title:"Past Participle", desc:"Used in Perfect Tenses and Passive Voice",
+  qs:[
+    { type:"mc", q:"What is the past participle of 'write'?",
+      opts:["wrote","writed","written","writing"], ans:2,
+      exp:"<em>Write → wrote → <strong>written</strong></em> (irregular). Se usa en Present Perfect: <em>I have written.</em>" },
+    { type:"fill", q:"Complete with the correct past participle:", eg:"She has ___ (eat) already.",
+      ans:"eaten", hint:"eat → ate → ?", exp:"<em>Eat → ate → <strong>eaten</strong></em>. Irregular." },
+    { type:"mc", q:"'I have ___ (see) that movie.' What is the past participle of 'see'?",
+      opts:["saw","seen","seed","seeing"], ans:1,
+      exp:"<em>See → saw → <strong>seen</strong></em> (irregular)." },
+    { type:"mc", q:"Past participle of 'play' (regular verb)?",
+      opts:["play","plays","playing","played"], ans:3,
+      exp:"Verbos regulares: infinitivo + <strong>-ed</strong> = participio. <em>play → played</em>." },
+    { type:"fill", q:"Complete:", eg:"The email has been ___ (send).",
+      ans:"sent", hint:"send is irregular", exp:"<em>Send → sent → <strong>sent</strong></em>. Participio irregular." },
+    { type:"mc", q:"Which sentence correctly uses the past participle?",
+      opts:["I have went there.","She has ate lunch.","They have finished the project.","He has buyed a car."], ans:2,
+      exp:"<em>finished</em> es el participio correcto de <em>finish</em> (regular)." },
+    { type:"fill", q:"Write the past participle of 'break':", eg:"The window was ___ (break).",
+      ans:"broken", hint:"break → broke → ?", exp:"<em>Break → broke → <strong>broken</strong></em>." },
+    { type:"mc", q:"Past participle of 'go'?",
+      opts:["went","goed","gone","going"], ans:2,
+      exp:"<em>Go → went → <strong>gone</strong></em>. Irregular." },
+    { type:"mc", q:"'Have you ever ___ (be) to Japan?'",
+      opts:["was","were","be","been"], ans:3,
+      exp:"<em>Be → was/were → <strong>been</strong></em>. Participio de <em>be</em>." },
+    { type:"fill", q:"Complete:", eg:"I have ___ (know) him for years.",
+      ans:"known", hint:"know → knew → ?", exp:"<em>Know → knew → <strong>known</strong></em>. Irregular." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M8 – FUTURE WITH WILL
+// ══════════════════════════════════════════════════════
+{
+  num:"08", title:"Future with Will", desc:"Predictions, promises, spontaneous decisions",
+  qs:[
+    { type:"mc", q:"'I ___ help you with that.' (Spontaneous offer)",
+      opts:["am going to","will","am","was"], ans:1,
+      exp:"<strong>Will</strong> se usa para decisiones espontáneas y ofrecimientos en el momento." },
+    { type:"fill", q:"Complete with 'will' negative:", eg:"She ___ not forget you.",
+      ans:"will", hint:"Affirmative structure", exp:"Futuro simple: <strong>will + base verb</strong>. Negación: <em>will not / won't</em>." },
+    { type:"mc", q:"'I think it ___ rain tomorrow.' (Prediction)",
+      opts:["rains","rained","will rain","is raining"], ans:2,
+      exp:"Las predicciones sin evidencia concreta usan <strong>will</strong>." },
+    { type:"mc", q:"How do you form a yes/no question with will?",
+      opts:["Will + subject + verb?","Do + subject + will + verb?","Subject + will + verb?","Will + verb + subject?"], ans:0,
+      exp:"Preguntas: <strong>Will + sujeto + verbo base?</strong> → <em>Will you help me?</em>" },
+    { type:"fill", q:"Complete:", eg:"I promise I ___ (call) you tonight.",
+      ans:"will call", hint:"Promise = will", exp:"Las promesas y compromisos usan <strong>will</strong>: <em>will call</em>." },
+    { type:"mc", q:"'He won't come to the party.' 'Won't' is a contraction of:",
+      opts:["will not","would not","was not","will now"], ans:0,
+      exp:"<strong>Won't = will not</strong>. Es la contracción de la forma negativa del futuro con will." },
+    { type:"mc", q:"Which sentence uses 'will' correctly?",
+      opts:["She will goes home.","They will studied.","I will be there.","He wills help."], ans:2,
+      exp:"<strong>Will + base verb</strong> (sin conjugar). ✓ <em>I will be there.</em>" },
+    { type:"fill", q:"Make a question:", eg:"___ they arrive on time?",
+      ans:"Will", hint:"Future question word", exp:"<strong>Will</strong> va al inicio de las preguntas de futuro." },
+    { type:"mc", q:"'___ you be at the meeting tomorrow?'",
+      opts:["Do","Are","Will","Did"], ans:2,
+      exp:"Pregunta de futuro: <strong>Will you be…?</strong>" },
+    { type:"fill", q:"Complete (negative short form):", eg:"I ___ tell anyone, I promise.",
+      ans:"won't", hint:"will not (contraction)", exp:"<strong>Won't</strong> = will not (contracción negativa)." }
+  ]
+},
+
+// ══════════════════════════════════════════════════════
+// M9 – GOING TO vs WILL
+// ══════════════════════════════════════════════════════
+{
+  num:"09", title:"Going To vs Will", desc:"Plans, intentions and predictions",
+  qs:[
+    { type:"mc", q:"'Look at those clouds! It ___ rain.' (Evidence present)",
+      opts:["will","is going to","rains","rained"], ans:1,
+      exp:"Cuando hay evidencia visible, usamos <strong>be going to</strong> para predicciones." },
+    { type:"mc", q:"'I ___ visit my grandmother next weekend.' (Prior plan)",
+      opts:["will visit","am going to visit","visit","visited"], ans:1,
+      exp:"Planes ya decididos antes del momento de hablar → <strong>be going to</strong>." },
+    { type:"fill", q:"Complete with 'will' or 'going to' (spontaneous decision):", eg:"The phone is ringing. I ___ answer it.",
+      ans:"will answer", hint:"Spontaneous = will", exp:"Decisión tomada en el momento → <strong>will</strong>." },
+    { type:"mc", q:"'I think robots ___ change the world.' (Opinion/prediction without evidence)",
+      opts:["are going to","will","are","were"], ans:1,
+      exp:"Opiniones y predicciones generales sin evidencia → <strong>will</strong>." },
+    { type:"mc", q:"'She ___ (be going to) have a baby.' (You can see she is pregnant.)",
+      opts:["will have","is going to have","has","would have"], ans:1,
+      exp:"Evidencia visible → <strong>be going to</strong>. Forma correcta: <em>is going to have</em>." },
+    { type:"fill", q:"Complete (plan):", eg:"We ___ travel to Japan next summer.",
+      ans:"are going to", hint:"Plan decided before", exp:"<strong>Are going to</strong> = plan previo." },
+    { type:"mc", q:"'A: There's no milk. B: Don't worry, I ___ buy some.' (Spontaneous)",
+      opts:["am going to","will","would","was going to"], ans:1,
+      exp:"Decisión espontánea en respuesta a una situación → <strong>will</strong>." },
+    { type:"mc", q:"How do you form 'going to' with 'he'?",
+      opts:["He going to run.","He is go to run.","He is going to run.","He are going to run."], ans:2,
+      exp:"<strong>Subject + am/is/are + going to + base verb.</strong> → <em>He is going to run.</em>" },
+    { type:"fill", q:"Complete with the correct future form:", eg:"___ you go to the concert? (Prior plan)",
+      ans:"Are you going to", hint:"Question form of going to", exp:"Pregunta con going to: <strong>Are/Is/Am + subject + going to + verb?</strong>" },
+    { type:"mc", q:"'Probably, technology ___ be different in 50 years.' Best choice?",
+      opts:["is going to","will","was going to","goes to"], ans:1,
+      exp:"Predicciones a largo plazo con palabras como <em>probably, I think, maybe</em> → <strong>will</strong>." }
+  ]
+}
+
+]; // end MODULES
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {}; // state[modIdx][qIdx] = {answered, correct}
+let totalScore = 0;
+
+MODULES.forEach((m, mi) => {
+  state[mi] = {};
+  m.qs.forEach((_, qi) => {
+    state[mi][qi] = { answered: false, correct: false };
+  });
+});
+
+// ─── BUILD UI ─────────────────────────────────────────────────────────────────
+const tabsEl = document.getElementById('tabs');
+const panelsEl = document.getElementById('panels');
+
+MODULES.forEach((mod, mi) => {
+  // TAB
+  const tab = document.createElement('div');
+  tab.className = 'tab' + (mi === 0 ? ' active' : '');
+  tab.innerHTML = `M${mod.num} <span class="tab-check" id="tc-${mi}"></span>`;
+  tab.onclick = () => switchTab(mi);
+  tabsEl.appendChild(tab);
+
+  // PANEL
+  const panel = document.createElement('div');
+  panel.className = 'panel' + (mi === 0 ? ' active' : '');
+  panel.id = `panel-${mi}`;
+  panel.innerHTML = `
+    <div class="main">
+      <div class="mod-banner">
+        <div class="mod-num">${mod.num}</div>
+        <div class="mod-info">
+          <h2>${mod.title}</h2>
+          <p>${mod.desc}</p>
+          <div class="mod-progress">
+            <div class="pbar"><div class="pbar-fill" id="pf-${mi}" style="width:0%"></div></div>
+            <span class="pbar-txt" id="pt-${mi}">0/10</span>
+          </div>
+        </div>
+      </div>
+      <div id="qs-${mi}"></div>
+      <button class="reset-btn" onclick="resetModule(${mi})">↺ Reiniciar módulo</button>
+    </div>`;
+  panelsEl.appendChild(panel);
+
+  // QUESTIONS
+  const qsEl = panel.querySelector(`#qs-${mi}`);
+  mod.qs.forEach((q, qi) => {
+    qsEl.appendChild(buildQuestion(q, mi, qi));
+  });
+});
+
+function buildQuestion(q, mi, qi) {
+  const card = document.createElement('div');
+  card.className = 'qcard';
+  card.id = `card-${mi}-${qi}`;
+
+  const badgeClass = q.type === 'mc' ? 'badge-mc' : 'badge-fill';
+  const badgeLabel = q.type === 'mc' ? 'Selección' : 'Completar';
+
+  let body = '';
+  if (q.eg) body += `<div class="eg">${q.eg}</div>`;
+
+  if (q.type === 'mc') {
+    const letters = ['A','B','C','D'];
+    body += `<div class="options" id="opts-${mi}-${qi}">` +
+      q.opts.map((o, oi) =>
+        `<div class="opt" id="opt-${mi}-${qi}-${oi}" onclick="pickOpt(${mi},${qi},${oi})">
+          <span class="oletter">${letters[oi]}</span>${o}
+        </div>`
+      ).join('') + `</div>`;
+  } else {
+    body += `<div class="fill-row">
+      <input class="fill-in" id="fi-${mi}-${qi}" placeholder="${q.hint || 'Your answer...'}" 
+        onkeydown="if(event.key==='Enter')checkFill(${mi},${qi})">
+      <button class="check-btn" id="cb-${mi}-${qi}" onclick="checkFill(${mi},${qi})">Check</button>
+    </div>`;
+  }
+
+  body += `<div class="fb" id="fb-${mi}-${qi}"></div>`;
+
+  card.innerHTML = `
+    <div class="qhead">
+      <div class="qnum" id="qn-${mi}-${qi}">${qi + 1}</div>
+      <div class="qtext">${q.q}</div>
+      <span class="qbadge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    ${body}`;
+  return card;
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────────────────────────
+function pickOpt(mi, qi, oi) {
+  if (state[mi][qi].answered) return;
+  const q = MODULES[mi].qs[qi];
+  const correct = oi === q.ans;
+  state[mi][qi] = { answered: true, correct };
+
+  // Style all options
+  ['A','B','C','D'].forEach((_, i) => {
+    const el = document.getElementById(`opt-${mi}-${qi}-${i}`);
+    if (!el) return;
+    el.classList.add('disabled');
+    if (i === q.ans) el.classList.add('correct');
+    else if (i === oi && !correct) el.classList.add('wrong');
+  });
+
+  showFeedback(mi, qi, correct, null);
+  updateCard(mi, qi, correct);
+  updateScore(correct);
+  updateProgress(mi);
+}
+
+function checkFill(mi, qi) {
+  const q = MODULES[mi].qs[qi];
+  const inp = document.getElementById(`fi-${mi}-${qi}`);
+  const btn = document.getElementById(`cb-${mi}-${qi}`);
+  if (!inp || state[mi][qi].answered) return;
+
+  const userVal = inp.value.trim().toLowerCase();
+  const correctVal = q.ans.toLowerCase();
+  const correct = userVal === correctVal;
+
+  state[mi][qi] = { answered: true, correct };
+  inp.classList.add(correct ? 'correct' : 'wrong');
+  inp.disabled = true;
+  btn.disabled = true;
+
+  if (!correct) inp.value = inp.value; // keep user answer, show correct in feedback
+
+  showFeedback(mi, qi, correct, q.ans);
+  updateCard(mi, qi, correct);
+  updateScore(correct);
+  updateProgress(mi);
+}
+
+function showFeedback(mi, qi, correct, correctAns) {
+  const q = MODULES[mi].qs[qi];
+  const fb = document.getElementById(`fb-${mi}-${qi}`);
+  if (!fb) return;
+  const icon = correct ? '✅' : '❌';
+  const intro = correct ? 'Correct!' : `Incorrect. The answer is: <strong>${correctAns || q.opts[q.ans]}</strong>`;
+  fb.innerHTML = `<span>${icon} <strong>${intro}</strong></span><br><span style="margin-top:6px;display:block">${q.exp}</span>`;
+  fb.className = `fb show ${correct ? 'fb-ok' : 'fb-fail'}`;
+}
+
+function updateCard(mi, qi, correct) {
+  const card = document.getElementById(`card-${mi}-${qi}`);
+  const num = document.getElementById(`qn-${mi}-${qi}`);
+  if (card) card.classList.add(correct ? 'ok' : 'fail');
+  if (num) num.textContent = correct ? '✓' : '✗';
+}
+
+function updateScore(correct) {
+  if (correct) {
+    totalScore += 10;
+    const el = document.getElementById('gscore');
+    if (el) el.textContent = totalScore;
+  }
+}
+
+function updateProgress(mi) {
+  const answered = Object.values(state[mi]).filter(s => s.answered).length;
+  const pct = (answered / 10) * 100;
+  const fill = document.getElementById(`pf-${mi}`);
+  const txt = document.getElementById(`pt-${mi}`);
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = `${answered}/10`;
+
+  // Tab checkmark
+  const correct = Object.values(state[mi]).filter(s => s.correct).length;
+  const tc = document.getElementById(`tc-${mi}`);
+  if (tc) tc.textContent = answered === 10 ? ` ${correct}/10` : '';
+}
+
+function switchTab(mi) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === mi));
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === mi));
+}
+
+function resetModule(mi) {
+  // Subtract score
+  Object.values(state[mi]).forEach(s => { if (s.correct) totalScore -= 10; });
+  const el = document.getElementById('gscore');
+  if (el) el.textContent = Math.max(0, totalScore);
+
+  state[mi] = {};
+  MODULES[mi].qs.forEach((_, qi) => {
+    state[mi][qi] = { answered: false, correct: false };
+  });
+
+  const qsEl = document.getElementById(`qs-${mi}`);
+  if (qsEl) {
+    qsEl.innerHTML = '';
+    MODULES[mi].qs.forEach((q, qi) => {
+      qsEl.appendChild(buildQuestion(q, mi, qi));
+    });
+  }
+  updateProgress(mi);
+}
+</script>
+
+</body>
+</html>
