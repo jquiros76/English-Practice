@@ -181,7 +181,7 @@ padding: 11px 14px;
 cursor: pointer;
 font-size: 0.88rem;
 color: var(–ink);
-transition: all 0.18s;
+transition: all 0.2 ease;
 user-select: none;
 }
 .opt:hover:not(.disabled) { border-color: var(–accent); background: #162b22; }
@@ -196,9 +196,23 @@ display: flex; align-items: center; justify-content: center;
 font-family: ‘DM Mono’, monospace; font-size: 0.75rem; font-weight: 500;
 background: var(–surface); color: var(–ink2); transition: all 0.18s;
 }
-.opt.correct .oletter { background: var(–correct); color: #fff; border-color: var(–correct); }
-.opt.wrong .oletter { background: var(–wrong); color: #fff; border-color: var(–wrong); }
-.opt.selected .oletter { background: var(–blue); color: #fff; border-color: var(–blue); }
+.opt.correct .oletter {
+  background: #3ecf8e;
+  color: #0f172a;
+  border-color: #3ecf8e;
+}
+
+.opt.wrong .oletter {
+  background: #f87171;
+  color: #0f172a;
+  border-color: #f87171;
+}
+
+.opt.selected .oletter {
+  background: #60a5fa;
+  color: #0f172a;
+  border-color: #60a5fa;
+}
 
 /* FILL */
 .fill-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
