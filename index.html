@@ -157,7 +157,7 @@ text-transform: uppercase; padding: 3px 9px; border-radius: 20px;
 }
 .badge-mc { background: #dbeafe; color: #60a5fa;; }
 .badge-fill { background: #fef3c7; color: #92400e; }
-.qtext { flex: 1; font-size: 0.93rem; line-height: 1.55; color: #1e2333; }
+.qtext { flex: 1; font-size: 0.93rem; line-height: 1.55; color: #e2e8f0; }
 
 .eg {
 background: #1a1e2e;
@@ -171,23 +171,24 @@ font-style: italic;
 }
 
 /* OPTIONS */
-.options { display: flex; flex-direction: column; gap: 8px; }
 .opt {
-display: flex; align-items: center; gap: 10px;
-background: #181c27;
-border: 1.5px solid #2a3050;
-border-radius: 10px;
-padding: 11px 14px;
-cursor: pointer;
-font-size: 0.88rem;
-color: #1e2333;
-transition: all 0.2 ease;
-user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #181c27;
+  border: 1.5px solid #2a3050;
+  border-radius: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+
+  color: #e2e8f0;
+  transition: all 0.2s ease;
 }
-.opt:hover:not(.disabled) { border-color: #3ecf8e; background: #162b22; }
-.opt.selected { border-color: #60a5fa;; background: #1a2a40; }
+.opt:hover:not(.disabled) { border-color: #3ecf8e; background: #1f2937; }
+.opt.selected { border-color: #3ecf8e; background: #0d2e20; color: #6ee7b7; font-weight: 600;}
 .opt.correct { border-color: #3ecf8e; background: #0d2e20; color: #3ecf8e; font-weight: 600; }
-.opt.wrong { border-color: #f87171; background: #2e1010; color: #f87171; }
+.opt.wrong { border-color: #f87171; background: #2e1010; color: #fca5a5; }
 .opt.disabled { cursor: default; }
 .oletter {
 width: 26px; height: 26px; flex-shrink: 0;
